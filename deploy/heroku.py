@@ -11,10 +11,6 @@ app.secret_key = "secret key"
 #Define the upload folder to save images uploaded by the user. 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
 #Add Post method to the decorator to allow for form submission. 
 @app.route('/', methods=['POST'])
 def submit_file():
@@ -24,15 +20,11 @@ def submit_file():
             return redirect(request.url)
         file = request.files['file']
         if file.filename == '':
-            # flash('No file selected for uploading')
             return redirect(request.url)
         if file:
             filename = secure_filename(file.filename)  #Use this werkzeug method to secure filename. 
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
             label = main.predict(filename)
-            flash(label)
-            full_filename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            flash(full_filename)
-            return redirect('/')
+            return label
+          
 if __name__ == "__main__":
     app.run(debug=True)
